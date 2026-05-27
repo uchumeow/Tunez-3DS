@@ -1,31 +1,50 @@
-# Tunez3DS
-A simple, glass-themed MP3 player for your 3DS. 
+# 🎵 Tunez3DS
 
-This project started as a side thing for myself because I wanted a music player that actually looked good on the 3DS, but I figured I'd share it in case anyone else was looking for the same. It's built with `citro2d` and `citro3d` so it’s fast and smooth.
+**Tunez3DS** is a feature-rich, high-performance MP3 player for the Nintendo 3DS, designed with a focus on aesthetics and smooth user experience. It utilizes a modern "Glass & Geometry" UI to bring a contemporary feel to the classic handheld.
 
-## What it does
-- **Browsing**: Just tap to pick your folders or songs. It's built to feel responsive.
-- **Visuals**: 7 themes (I'm particularly proud of the "Everforest" one).
-- **Speed**: Need to listen to a podcast faster? You can adjust the playback speed (0.25x - 4x) in the settings.
-- **Pocket-Safe**: Toggle "Lid Protection" if you don't want to accidentally skip tracks when the 3DS is in your pocket.
-- **Updates**: You can check for new versions right inside the app settings.
+## ✨ Features
 
-## How to get it
-1. Download the `.cia` (for installation) or `.3dsx` (for homebrew launcher) from the [Releases page](https://github.com/veylo-3DS/Tunez-3DS/releases/latest).
-2. Scan this QR code with **FBI** if you're using the CIA file:
+- **🎨 Modern UI**: Beautiful card-based layouts with depth effects and smooth animations powered by `citro2d`.
+- **🌈 Customizable Themes**: Includes 7 built-in themes like *Everforest*, *Midnight Purple*, and *Classic Light*.
+- **📊 Audio Engine**: High-quality playback using `ndsp` and `mpg123`.
+- **⚡ Advanced Playback**:
+  - Adjust playback speed (0.25x - 4x) and pitch.
+  - Multiple modes: Normal, Shuffle, Repeat One, and Repeat All.
+- **📁 Smart Browser**: Responsive file navigation with support for folders and MP3 metadata (ID3 tags).
+- **🖼️ Cover Art**: Automatic loading of embedded or local cover art.
+- **🔒 Pocket Mode**: "Lid Protection" settings to prevent accidental track skips while on the move.
+- **🔄 Auto-Updates**: Check for and install the latest versions directly from the app.
+
+## 🎮 Controls
+
+| Input | Action |
+| :--- | :--- |
+| **Touch Screen** | Tap to select, double-tap to play/open |
+| **D-Pad Up/Down** | Navigate through lists |
+| **D-Pad Left/Right** | Change playback mode / Adjust settings |
+| **L / R Buttons** | Skip to Previous / Next track |
+| **A / B** | Confirm / Back |
+| **X / Y** | Play / Pause / Stop |
+| **SELECT** | Open Settings Menu |
+| **START** | Exit Application |
+
+## 🚀 Installation
+
+1. Download the latest `.cia` or `.3dsx` from the [Releases](https://github.com/uchumeow/Tunez-3DS/releases/latest) page.
+2. **CIA Installation**: Transfer to your SD card and install via **FBI**, or scan the QR code below:
    <br>
    <img src="Tunez3DS_qr.png" alt="Scan me with FBI!" width="200"/>
+3. **3DSX Usage**: Place the file in the `/3ds/` folder on your SD card and launch via the Homebrew Launcher.
 
-## How to use it
-- **Touch**: Tap an item to select it, tap again to open or play.
-- **D-Pad**: Up/Down to move, L/R to change playback mode or adjust speed in settings.
-- **Buttons**: L/R to skip tracks, A/X/Y for standard playback controls. 
-- **SELECT**: Opens the settings menu.
+## 📂 Setup
 
-## Setup
-Just put your MP3s in an `sdmc:/Music` folder on your SD card. Everything else should "just work."
+Place your music files in the `sdmc:/Music` folder on your SD card. Tunez3DS will automatically scan this directory on startup.
 
-## A note on bugs
-I'm not exactly a C pro, so if it breaks, please open a GitHub issue. I'll get to it when I can. This is a passion project, so thanks for being patient!
+## 🛠️ Credits & Technical Details
 
-*Built for the 3DS community. Thanks for using it!*
+Built using the [devkitPro](https://devkitpro.org/) toolchain and the following libraries:
+- [libctru](https://github.com/smealum/ctru)
+- [citro2d](https://github.com/fincs/citro2d) & [citro3d](https://github.com/fincs/citro3d)
+- [mpg123](https://www.mpg123.de/)
+
+*This project is a labor of love for the 3DS homebrew community. If you encounter any issues, please feel free to open a [GitHub Issue](https://github.com/uchumeow/Tunez-3DS/issues).*
