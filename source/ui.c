@@ -94,6 +94,7 @@ void saveTheme(void) {
     if (!f) return;
     fwrite(&currentTheme, sizeof(int), 1, f);
     fwrite(&disableLRSkipClosed, sizeof(bool), 1, f);
+    fwrite(&playbackPitch, sizeof(float), 1, f);
     fclose(f);
 }
 
@@ -104,6 +105,7 @@ void loadTheme(void) {
     if (fread(&t, sizeof(int), 1, f) == 1)
         if (t >= 0 && t < THEME_COUNT) currentTheme = t;
     fread(&disableLRSkipClosed, sizeof(bool), 1, f);
+    fread(&playbackPitch, sizeof(float), 1, f);
     fclose(f);
 }
 
@@ -348,22 +350,20 @@ void drawSettingsScreen(void) {
                      i == currentTheme ? CLR_TEXT : CLR_SUBTEXT);
         }
     } else if (settingsPage == 1) {
-        drawText("Playback Speed", 12, 44, 0, 0.55f, CLR_SUBTEXT);
+        drawText("Audio Effects", 12, 44, 0, 0.55f, CLR_SUBTEXT);
         
-        drawRoundedRect(40, 70, TOP_WIDTH - 80, 80, 12, CLR_PANEL);
+        drawRoundedRect(40, 70, TOP_WIDTH - 80, 100, 12, CLR_PANEL);
+        
         char speedBuf[32];
-        snprintf(speedBuf, 32, "%.2fx", playbackSpeed);
+        char pitchBuf[32];
+        snprintf(speedBuf, 32, "Speed: %.2fx", playbackSpeed);
+        snprintf(pitchBuf, 32, "Pitch: %.2fx", playbackPitch);
         
-        C2D_Text txt;
-        C2D_TextBufClear(dynBuf);
-        C2D_TextParse(&txt, dynBuf, speedBuf);
-        C2D_TextOptimize(&txt);
-        float tw, th;
-        C2D_TextGetDimensions(&txt, 1.2f, 1.2f, &tw, &th);
-        drawText(speedBuf, (TOP_WIDTH - tw) / 2.0f, 90, 0, 1.2f, CLR_ACCENT);
+        drawText(speedBuf, 60, 90, 0, 0.8f, CLR_ACCENT);
+        drawText(pitchBuf, 60, 130, 0, 0.8f, CLR_HILIGHT);
 
-        drawText("D-Pad Left/Right: -/+ 0.1x", 45, 160, 0, 0.42f, CLR_TEXT);
-        drawText("X Button: Reset to 1.0x", 45, 180, 0, 0.42f, CLR_TEXT);
+        drawText("D-Pad L/R: Speed | D-Pad U/D: Pitch", 45, 180, 0, 0.42f, CLR_TEXT);
+        drawText("X Button: Reset Both", 45, 200, 0, 0.42f, CLR_TEXT);
     } else if (settingsPage == 2) {
         drawText("Input Safety", 12, 44, 0, 0.55f, CLR_SUBTEXT);
         
@@ -422,10 +422,11 @@ void drawSettingsScreen(void) {
         drawText("> PLAYING", 16, pY + 58, 0, 0.42f, CLR_HILIGHT);
     } else if (settingsPage == 1) {
         drawRoundedRect(20, 40, BOT_WIDTH - 40, 160, 12, CLR_PANEL);
-        drawText("Playback speed adjusts the", 40, 60, 0, 0.45f, CLR_TEXT);
-        drawText("pitch and rate of the audio.", 40, 80, 0, 0.45f, CLR_TEXT);
-        drawText("Higher speed = High pitch", 40, 110, 0, 0.45f, CLR_SUBTEXT);
-        drawText("Lower speed = Low pitch", 40, 130, 0, 0.45f, CLR_SUBTEXT);
+        drawText("Audio Effects", 40, 60, 0, 0.45f, CLR_HILIGHT);
+        drawText("Speed affects playback rate.", 40, 90, 0, 0.42f, CLR_TEXT);
+        drawText("Pitch affects audio frequency.", 40, 105, 0, 0.42f, CLR_TEXT);
+        drawText("Independent controls.", 40, 125, 0, 0.42f, CLR_ACCENT);
+        drawText("Powered by libsonic", 40, 180, 0, 0.38f, CLR_SUBTEXT);
     } else if (settingsPage == 2) {
         drawRoundedRect(20, 40, BOT_WIDTH - 40, 160, 12, CLR_PANEL);
         drawText("Safety Options", 40, 60, 0, 0.45f, CLR_TEXT);

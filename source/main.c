@@ -7,6 +7,7 @@ int scrollTick = 0;
 int lastSelected = -1;
 AppScreen currentScreen = SCREEN_BROWSER;
 int settingsPage = 0;
+int settingsCursor = 0;
 
 int main(void) {
     gfxInitDefault();
@@ -65,14 +66,22 @@ int main(void) {
                     if (currentTheme > 0) currentTheme--;
                 }
             } else if (settingsPage == 1) {
+                // Audio Effects (Speed & Pitch)
                 if (down & KEY_DRIGHT) {
                     setPlaybackSpeed(playbackSpeed + 0.1f);
                 }
                 if (down & KEY_DLEFT) {
                     setPlaybackSpeed(playbackSpeed - 0.1f);
                 }
+                if (down & KEY_DUP) {
+                    setPlaybackPitch(playbackPitch + 0.1f);
+                }
+                if (down & KEY_DDOWN) {
+                    setPlaybackPitch(playbackPitch - 0.1f);
+                }
                 if (down & KEY_X) {
                     setPlaybackSpeed(1.0f);
+                    setPlaybackPitch(1.0f);
                 }
             } else if (settingsPage == 2) {
                 if (down & KEY_A) disableLRSkipClosed = !disableLRSkipClosed;
