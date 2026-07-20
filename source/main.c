@@ -9,6 +9,21 @@ AppScreen currentScreen = SCREEN_BROWSER;
 int settingsPage = 0;
 int settingsCursor = 0;
 
+int selected = 0; // prevent invalid index before first dir scan - arcmage
+int entryCount = 0; // empty state must be valid for selection checks - arcmage
+
+static void safestrncpy(char *dst, const char *src, size_t size) {
+    if (size == 0) return;
+    strncpy(dst, src, size - 1);
+    dst[size - 1] = '\0';
+} // strncpy wrapper that guarantees null termination - arcmage
+
+static bool validateselection(void) {
+    return selected >= 0 && selected < entryCount;
+}
+
+#define AUDIO_BUFFER_SIZE (1024 * 1024)
+
 int main(void) {
     gfxInitDefault();
     C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
@@ -21,7 +36,11 @@ int main(void) {
 
     ndspInit();
     ndspSetOutputMode(NDSP_OUTPUT_STEREO);
-    audioBuf = (u8 *)linearAlloc(1024 * 1024); // Allocate enough for BUF_SIZE * 2
+    audioBuf = (u8 *)linearAlloc(AUDIO_BUFFER_SIZE); // allocate fixed size audio buffer used by decoder - arcmage
+    if (!audioBuf) {
+        gfxExit();
+        return -1;
+    } // allocation check to fix potential memory issues - arcmage
     mpg123_init();
     ptmuInit();
 
@@ -114,10 +133,10 @@ int main(void) {
 
                 // If it was a tap (little movement), trigger action
                 if (abs(lastTouchY - touchStartY) < 20) {
-                    if (selected < entryCount) {
-                        Entry *e = &entries[selected];
+                    if (validateselection()) {
+                        Entry *e = &entries[selected]; // if -1 selected, memory invalid - arcmage
                         if (e->type == ENTRY_DIR) {
-                            strncpy(currentDir, e->fullPath, MAX_PATH - 1);
+                            safestrncpy(currentDir, e->fullPath, MAX_PATH); // no need for -1 because of safestrncpy - arcmage
                             scanDir(currentDir);
                             selected = 0; // Reset cursor for new directory
                         } else {
@@ -133,7 +152,13 @@ int main(void) {
                     int scrollDiff = diffY / rowH;
                     int newOffset = scrollOffsetAtTouchStart + scrollDiff;
                     if (newOffset < 0) newOffset = 0;
-                    if (newOffset > entryCount - PAGE_SIZE) newOffset = entryCount - PAGE_SIZE;
+                    int maxScroll = entryCount - PAGE_SIZE;
+                    if (maxScroll < 0)
+                        maxScroll = 0;
+                    if (newOffset > maxScroll)
+                        newOffset = maxScroll;
+                    if (newOffset < 0)
+                        newOffset = 0; // fix negative / false scroll positions and empty folder issues - arcmage
                     if (entryCount <= PAGE_SIZE) newOffset = 0;
                     scrollOffset = newOffset;
                 }
@@ -172,10 +197,10 @@ int main(void) {
                     if (selected < scrollOffset) scrollOffset--;
                 }
             }
-            if (down & KEY_A && entryCount > 0) {
+            if (down & KEY_A && validateselection()) {
                 Entry *e = &entries[selected];
                 if (e->type == ENTRY_DIR) {
-                    strncpy(currentDir, e->fullPath, MAX_PATH - 1);
+                    safestrncpy(currentDir, e->fullPath, MAX_PATH);
                     scanDir(currentDir);
                 } else {
                     startPlayback(e->fullPath);
@@ -184,7 +209,7 @@ int main(void) {
             if (down & KEY_B) {
                 const char *slash = strrchr(currentDir, '/');
                 char childName[256] = "";
-                if (slash) strncpy(childName, slash + 1, 255);
+                if (slash) safestrncpy(childName, slash + 1, sizeof(childName)); // no need for -1 because of safestrncpy - arcmage
                 if (goUp()) {
                     scanDir(currentDir);
                     if (childName[0]) {
@@ -210,7 +235,7 @@ int main(void) {
             if (down & KEY_Y) stopPlayback();
 
             // Always increment scrollTick to allow for smooth text scrolling
-            scrollTick++;
+            scrollTick++; // in the future dont use this, as it is dependent on the frame rate. im too fucking lazy to fix this shit - arcmage
             if (selected != lastSelected) {
                 scrollTick   = 0;
                 lastSelected = selected;
